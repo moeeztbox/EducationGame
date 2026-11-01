@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skeleton Match Demo</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --stage: #1e2a3a;
+    --bone: #efe6cf;
+    --accent: #3b82f6;
+    --ok: #22c55e;
+    --bad: #ef4444;
+    --text: #1f2937;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: #fff; border-bottom: 1px solid #e5e7eb;
+  }
+  header h1 { font-size: 18px; margin: 0; }
+  header small { color: #6b7280; display: block; font-weight: 400; margin-top: 2px; }
+  .controls { display: flex; gap: 8px; }
+  button.ctl {
+    border: 1px solid #d1d5db; background: #fff; border-radius: 8px;
+    padding: 8px 14px; font-size: 14px; cursor: pointer;
+  }
+  button.ctl:hover { background: #f3f4f6; }
+  .progress-wrap { padding: 12px 20px 0; max-width: 960px; margin: 0 auto; }
+  .bar { height: 12px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, #60a5fa, var(--ok)); transition: width .5s; }
+  .progress-text { font-size: 13px; color: #6b7280; margin-top: 6px; }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 20px;
+    max-width: 960px; margin: 12px auto 24px; padding: 0 20px;
+  }
+  .stage {
+    position: relative; background: radial-gradient(circle at 50% 38%, #3a5675 0%, #1e2a3a 70%); border-radius: 16px;
+    display: flex; justify-content: center; padding: 8px; overflow: hidden;
+  }
+  .stage svg { height: min(72vh, 620px); width: auto; max-width: 100%; touch-action: none; }
+  .toast {
+    position: absolute; top: 14px; left: 50%; transform: translate(-50%, -20px);
+    background: #111827; color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 14px;
+    opacity: 0; transition: .3s; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .tray {
+    background: #fff; border-radius: 16px; padding: 16px; border: 1px solid #e5e7eb;
+    align-self: start;
+  }
+  .tray h2 { font-size: 15px; margin: 0 0 4px; }
+  .tray p { font-size: 13px; color: #6b7280; margin: 0 0 14px; line-height: 1.5; }
+  .chips { display: flex; flex-direction: column; gap: 10px; }
+  .chip {
+    background: var(--accent); color: #fff; padding: 12px 16px; border-radius: 12px;
+    font-size: 18px; font-weight: 600; text-align: center; cursor: grab; user-select: none;
+    touch-action: none; transition: transform .25s, opacity .25s, background .25s;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, .35);
+  }
+  .chip.drag { cursor: grabbing; z-index: 50; position: relative; box-shadow: 0 10px 24px rgba(0,0,0,.3); }
+  .chip.done { background: var(--ok); opacity: .45; cursor: default; box-shadow: none; }
+  .chip.shake { animation: shake .4s; background: var(--bad); }
+
+  /* skeleton drawing */
+  .bone { fill: var(--bone); stroke: #8a7f6a; stroke-width: 2; }
+  .limb { fill: none; stroke: var(--bone); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+  .hole { fill: #141b27; }
+  .zone { fill: rgba(96, 165, 250, .12); stroke: #60a5fa; stroke-width: 2; stroke-dasharray: 5 4; animation: pulse 1.6s infinite; }
+  .zone.hot { fill: rgba(250, 204, 21, .35); stroke: #facc15; }
+  .zone.filled { opacity: 0; pointer-events: none; animation: none; }
+  .lbl { font-size: 17px; font-weight: 700; fill: var(--ok); opacity: 0; transition: opacity .4s; font-family: Tahoma, "Segoe UI", sans-serif; }
+  .lbl.on { opacity: 1; }
+  .part.matched { cursor: pointer; }
+
+  /* animations (same idea as Framer Motion keyframes) */
+  .anim-wave { animation: wave .9s ease-in-out; transform-origin: 110px 122px; }
+  .anim-tap  { animation: tap .8s ease-in-out; transform-origin: 118px 436px; }
+  .anim-nod  { animation: nod .8s ease-in-out; transform-origin: 150px 104px; }
+  .anim-wiggle { animation: wiggle .7s ease-in-out; transform-origin: 150px 72px; }
+  .anim-jump { animation: jump .8s cubic-bezier(.3,.7,.4,1); }
+  .anim-jump2 { animation: jump .8s cubic-bezier(.3,.7,.4,1) 2; }
+
+  @keyframes wave { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-35deg)} 40%{transform:rotate(15deg)} 60%{transform:rotate(-30deg)} 80%{transform:rotate(10deg)} }
+  @keyframes tap { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-25deg)} 50%{transform:rotate(0)} 75%{transform:rotate(-25deg)} }
+  @keyframes nod { 0%,100%{transform:rotate(0)} 30%{transform:rotate(10deg)} 60%{transform:rotate(-8deg)} }
+  @keyframes wiggle { 0%,100%{transform:scale(1)} 25%{transform:scale(1.5) rotate(-12deg)} 50%{transform:scale(1.5) rotate(12deg)} 75%{transform:scale(1.2)} }
+  @keyframes jump { 0%,100%{transform:translateY(0)} 45%{transform:translateY(-45px)} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+  @keyframes shake { 0%,100%{translate:0} 20%{translate:-8px} 40%{translate:8px} 60%{translate:-6px} 80%{translate:6px} }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+
+  .confetti { position: fixed; top: -20px; width: 10px; height: 14px; z-index: 100; animation: fall linear forwards; }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; }
+    .chips { flex-direction: row; flex-wrap: wrap; }
+    .chip { flex: 1 1 40%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Skeleton Match <small id="subtitle">Class 3 · Science · Chapter 1 · Human Body</small></h1>
+  <div class="controls">
+    <button class="ctl" id="langBtn">اردو</button>
+    <button class="ctl" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="bar"><div id="barFill"></div></div>
+  <div class="progress-text" id="progressText"></div>
+</div>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="toast" id="toast"></div>
+    <svg viewBox="0 0 300 490" id="svg">
+      <defs>
+        <radialGradient id="skull" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d9cba8"/></radialGradient>
+        <filter id="ds" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".45"/></filter>
+      </defs>
+      <ellipse cx="150" cy="464" rx="78" ry="6" fill="#000" opacity=".3"/>
+      <g id="skeleton">
+        <g id="g-static" filter="url(#ds)"></g>
+        <g class="part" id="p-hand" filter="url(#ds)"></g>
+        <g class="part" id="p-foot" filter="url(#ds)"></g>
+        <g class="part" id="p-head" filter="url(#ds)">
+          <g id="head-art"></g>
+          <g class="part" id="p-nose"><path d="M150 64 L142 82 Q150 78 158 82 Z" class="hole"/></g>
+        </g>
+        <!-- drop zones (targets) -->
+        <circle class="zone" data-id="head"  cx="150" cy="26"  r="20"/>
+        <circle class="zone" data-id="nose"  cx="150" cy="76"  r="13"/>
+        <circle class="zone" data-id="hand"  cx="42"  cy="288" r="26"/>
+        <circle class="zone" data-id="foot"  cx="108" cy="448" r="26"/>
+
+        <!-- labels shown after a correct match -->
+        <text class="lbl" id="t-head" x="198" y="30">✓</text>
+        <text class="lbl" id="t-nose" x="198" y="86">✓</text>
+        <text class="lbl" id="t-hand" x="42"  y="334" text-anchor="middle">✓</text>
+        <text class="lbl" id="t-foot" x="108" y="478" text-anchor="middle">✓</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="tray">
+    <h2 id="trayTitle">Labels</h2>
+    <p id="trayHelp">Drag each label onto the matching body part. Click a matched part to see it move again.</p>
+    <div class="chips" id="chips"></div>
+  </aside>
+</main>
+
+<script>
+  // Content is data, not code: another chapter would just be another object like this.
+  const CHAPTER = {
+    parts: {
+      head: { en: 'Head', ur: 'سر',   anim: 'anim-nod' },
+      nose: { en: 'Nose', ur: 'ناک',  anim: 'anim-wiggle' },
+      hand: { en: 'Hand', ur: 'ہاتھ', anim: 'anim-wave' },
+      foot: { en: 'Foot', ur: 'پاؤں', anim: 'anim-tap' },
+    },
+  };
+  const UI = {
+    en: { sub: 'Class 3 · Science · Chapter 1 · Human Body', reset: 'Reset', lang: 'اردو', tray: 'Labels',
+          help: 'Drag each label onto the matching body part. Click a matched part to see it move again.',
+          wrong: 'Try again!', half: '50% done – jump!', win: 'All matched! 🎉', ok: 'Correct!' },
+    ur: { sub: 'تیسری جماعت · سائنس · باب 1 · انسانی جسم', reset: 'دوبارہ شروع', lang: 'English', tray: 'لیبل',
+          help: 'ہر لیبل کو جسم کے صحیح حصے پر کھینچ کر چھوڑیں۔ درست حصے پر کلک کریں تو وہ دوبارہ حرکت کرے گا۔',
+          wrong: 'دوبارہ کوشش کریں!', half: '50٪ مکمل – چھلانگ!', win: 'شاباش! سب درست 🎉', ok: 'درست!' },
+  };
+
+  const ids = Object.keys(CHAPTER.parts);
+  const matched = {};
+  let lang = 'en';
+  let halfShown = false;
+
+  const $ = (s) => document.querySelector(s);
+  const zones = [...document.querySelectorAll('.zone')];
+  const toast = $('#toast');
+
+  // Skeleton art is generated so every bone gets the same shading.
+  const OUT = '#7d705a', BODY = '#eadfc2', HI = '#fffaf0';
+  const mirror = (s) => `<g transform="translate(300 0) scale(-1 1)">${s}</g>`;
+  const joint = (x, y, r) =>
+    `<circle cx="${x}" cy="${y}" r="${r + 1.5}" fill="${OUT}"/><circle cx="${x}" cy="${y}" r="${r}" fill="${BODY}"/>` +
+    `<circle cx="${x - r * 0.3}" cy="${y - r * 0.3}" r="${r * 0.35}" fill="${HI}" opacity=".75"/>`;
+  const bone = (x1, y1, x2, y2, w) => {
+    const L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L, ny = (x2 - x1) / L;
+    const k = w * 0.72, o = w * 0.2;
+    const line = (c, sw, dx = 0, dy = 0, op = 1) =>
+      `<line x1="${x1 + dx}" y1="${y1 + dy}" x2="${x2 + dx}" y2="${y2 + dy}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" opacity="${op}"/>`;
+    const knobs = (c, r) => `<circle cx="${x1}" cy="${y1}" r="${r}" fill="${c}"/><circle cx="${x2}" cy="${y2}" r="${r}" fill="${c}"/>`;
+    return line(OUT, w + 3) + knobs(OUT, k + 1.5) + line(BODY, w) + knobs(BODY, k) + line(HI, w * 0.28, nx * o, ny * o, 0.7);
+  };
+  const stroke2 = (d, w) =>
+    `<path d="${d}" fill="none" stroke="${OUT}" stroke-width="${w + 2.5}" stroke-linecap="round"/>` +
+    `<path d="${d}" fill="none" stroke="${BODY}" stroke-width="${w}" stroke-linecap="round"/>`;
+
+  const spine = Array.from({ length: 14 }, (_, i) => {
+    const w = 10 + i * 0.5, y = 108 + i * 11, x = 150 - w / 2 + Math.sin(i * 0.6) * 1.2;
+    return `<rect x="${x}" y="${y}" width="${w}" height="9" rx="3" fill="${BODY}" stroke="${OUT}" stroke-width="1.5"/>` +
+           `<rect x="${x + 2}" y="${y + 1.5}" width="${w * 0.35}" height="2" rx="1" fill="${HI}" opacity=".8"/>`;
+  }).join('');
+  const ribs = [128, 141, 154, 167, 180].map((y, i) => {
+    const s = 1 - i * 0.07;
+    return stroke2(`M149 ${y} C${150 - 38 * s} ${y - 8} ${150 - 54 * s} ${y + 10} ${150 - 36 * s} ${y + 30} Q${150 - 22 * s} ${y + 37} 147 ${y + 29}`, 5);
+  }).join('');
+  const clavicle = stroke2('M148 124 Q130 113 112 120', 5);
+  const sternum = `<path d="M144 124 L156 124 L153 176 L150 188 L147 176 Z" fill="${BODY}" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/>`;
+  const pelvis =
+    `<path d="M110 262 C98 272 102 300 128 306 L150 296 L172 306 C198 300 202 272 190 262 C178 256 164 262 150 270 C136 262 122 256 110 262 Z" fill="${BODY}" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>` +
+    `<path d="M141 268 L159 268 L150 298 Z" fill="#cdbf9c" stroke="${OUT}" stroke-width="1.5"/>` +
+    `<ellipse cx="127" cy="286" rx="7" ry="9" fill="#141b27" opacity=".85"/><ellipse cx="173" cy="286" rx="7" ry="9" fill="#141b27" opacity=".85"/>`;
+
+  const legArt = () =>
+    joint(128, 291, 9) + bone(128, 292, 122, 360, 11) +
+    bone(122, 374, 118, 434, 9) + bone(131, 374, 129, 430, 5) +
+    joint(122, 364, 10) + joint(121, 366, 5) + joint(118, 437, 7);
+
+  const footArt = () =>
+    `<path d="M126 436 C128 450 122 458 110 458 L90 458 C84 458 82 452 88 450 L108 446 C113 445 113 440 114 436 Z" fill="${BODY}" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/>` +
+    `<path d="M90 458 V451 M96 458 V450 M102 458 V448" stroke="${OUT}" stroke-width="1.3"/>` +
+    `<ellipse cx="121" cy="447" rx="3.5" ry="5" fill="${HI}" opacity=".6"/>`;
+
+  const armArt = () => {
+    let s = bone(110, 126, 70, 196, 10) + bone(64, 207, 46, 266, 6) + bone(72, 207, 54, 268, 6) +
+            joint(110, 122, 9) + joint(68, 202, 8) + joint(50, 272, 6) +
+            `<path d="M38 277 Q47 272 57 277 L55 292 Q47 297 39 292 Z" fill="${BODY}" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/>`;
+    [9, 11, 10, 8].forEach((len, i) => {
+      const x = 40 + i * 5, x2 = x + (i - 1.5) * 1.6, x3 = x2 + (i - 1.5) * 1.2;
+      s += bone(x, 293, x2, 303, 3.4) + bone(x2, 303, x3, 303 + len, 3);
+    });
+    return s + bone(56, 281, 64, 292, 4.2) + bone(64, 292, 68, 300, 3.4);
+  };
+
+  const headArt = () => {
+    const half = (x) =>
+      `<ellipse cx="${x}" cy="54" rx="9.5" ry="11" fill="#141b27" stroke="${OUT}" stroke-width="1.5"/>` +
+      `<circle cx="${x - 2}" cy="50" r="2" fill="#44546e"/>`;
+    const cheek = `<path d="M118 66 Q124 76 134 74" fill="none" stroke="${OUT}" stroke-width="1.4" opacity=".7"/>`;
+    const teeth = [137.25, 141.5, 145.75, 150, 154.25, 158.5, 162.75].map((x) =>
+      `<line x1="${x}" y1="91" x2="${x}" y2="100" stroke="${OUT}" stroke-width="1"/>`).join('');
+    return `<path d="M127 94 Q127 112 150 114 Q173 112 173 94 L167 100 L133 100 Z" fill="${BODY}" stroke="${OUT}" stroke-width="1.8" stroke-linejoin="round"/>` +
+      `<path d="M150 14 C118 14 108 40 112 62 C113 72 120 78 124 82 L127 92 Q150 98 173 92 L176 82 C180 78 187 72 188 62 C192 40 182 14 150 14 Z" fill="url(#skull)" stroke="${OUT}" stroke-width="2"/>` +
+      `<ellipse cx="134" cy="30" rx="14" ry="7" fill="#fff" opacity=".55" transform="rotate(-25 134 30)"/>` +
+      half(136) + half(164) + cheek + mirror(cheek) +
+      `<rect x="133" y="91" width="34" height="9" rx="2" fill="#fffdf5" stroke="${OUT}" stroke-width="1.3"/>` + teeth;
+  };
+
+  $('#g-static').innerHTML = spine + ribs + mirror(ribs) + clavicle + mirror(clavicle) + sternum + pelvis +
+    legArt() + mirror(legArt()) + mirror(footArt()) + mirror(armArt());
+  $('#p-hand').innerHTML = armArt();
+  $('#p-foot').innerHTML = footArt();
+  $('#head-art').innerHTML = headArt();
+  function play(el, cls) {
+    el.classList.remove(cls);
+    void el.getBoundingClientRect(); // restart animation
+    el.classList.add(cls);
+    const done = (e) => { if (e.target === el) { el.classList.remove(cls); el.removeEventListener('animationend', done); } };
+    el.addEventListener('animationend', done);
+  }
+
+  let toastTimer;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  function renderText() {
+    const t = UI[lang];
+    document.documentElement.lang = lang;
+    $('#subtitle').textContent = t.sub;
+    $('#resetBtn').textContent = t.reset;
+    $('#langBtn').textContent = t.lang;
+    $('#trayTitle').textContent = t.tray;
+    $('#trayHelp').textContent = t.help;
+    $('#trayHelp').dir = lang === 'ur' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.chip').forEach((c) => (c.textContent = CHAPTER.parts[c.dataset.id][lang]));
+    ids.forEach((id) => { $('#t-' + id).textContent = '✓ ' + CHAPTER.parts[id][lang]; });
+    updateProgress();
+  }
+
+  function count() { return ids.filter((id) => matched[id]).length; }
+
+  function updateProgress() {
+    const n = count(), pct = Math.round((n / ids.length) * 100);
+    $('#barFill').style.width = pct + '%';
+    $('#progressText').textContent = `${n} / ${ids.length} · ${pct}%`;
+  }
+
+  function buildChips() {
+    const wrap = $('#chips');
+    wrap.innerHTML = '';
+    [...ids].sort(() => Math.random() - 0.5).forEach((id) => {
+      const c = document.createElement('div');
+      c.className = 'chip';
+      c.dataset.id = id;
+      wrap.appendChild(c);
+      enableDrag(c);
+    });
+  }
+
+  function nearestZone(x, y) {
+    let best = null, bestD = Infinity;
+    zones.forEach((z) => {
+      if (z.classList.contains('filled')) return;
+      const r = z.getBoundingClientRect();
+      const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+      if (d < r.width / 2 + 18 && d < bestD) { best = z; bestD = d; }
+    });
+    return best;
+  }
+
+  function enableDrag(chip) {
+    let sx = 0, sy = 0, dragging = false;
+    chip.addEventListener('pointerdown', (e) => {
+      if (chip.classList.contains('done')) return;
+      dragging = true; sx = e.clientX; sy = e.clientY;
+      chip.setPointerCapture(e.pointerId);
+      chip.classList.add('drag');
+      chip.style.transition = 'none';
+    });
+    chip.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      chip.style.transform = `translate(${e.clientX - sx}px, ${e.clientY - sy}px) scale(1.08)`;
+      const hot = nearestZone(e.clientX, e.clientY);
+      zones.forEach((z) => z.classList.toggle('hot', z === hot));
+    });
+    chip.addEventListener('pointerup', (e) => {
+      if (!dragging) return;
+      dragging = false;
+      chip.classList.remove('drag');
+      chip.style.transition = '';
+      zones.forEach((z) => z.classList.remove('hot'));
+      const z = nearestZone(e.clientX, e.clientY);
+      chip.style.transform = '';
+      if (!z) return;
+      if (z.dataset.id === chip.dataset.id) onMatch(chip.dataset.id, chip, z);
+      else {
+        play(chip, 'shake');
+        setTimeout(() => chip.classList.remove('shake'), 450);
+        say(UI[lang].wrong);
+      }
+    });
+  }
+
+  function onMatch(id, chip, zone) {
+    matched[id] = true;
+    chip.classList.add('done');
+    zone.classList.add('filled');
+    $('#t-' + id).classList.add('on');
+    $('#p-' + id).classList.add('matched');
+    play($('#p-' + id), CHAPTER.parts[id].anim);
+    updateProgress();
+    const n = count();
+    if (n === ids.length) {
+      say(UI[lang].win);
+      setTimeout(() => { play($('#skeleton'), 'anim-jump2'); confetti(); }, 900);
+    } else if (n / ids.length >= 0.5 && !halfShown) {
+      halfShown = true;
+      say(UI[lang].half);
+      setTimeout(() => play($('#skeleton'), 'anim-jump'), 900);
+    } else {
+      say(UI[lang].ok);
+    }
+  }
+
+  function confetti() {
+    const colors = ['#f87171', '#facc15', '#4ade80', '#60a5fa', '#c084fc'];
+    for (let i = 0; i < 40; i++) {
+      const d = document.createElement('div');
+      d.className = 'confetti';
+      d.style.left = Math.random() * 100 + 'vw';
+      d.style.background = colors[i % colors.length];
+      d.style.animationDuration = 2 + Math.random() * 2 + 's';
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 4500);
+    }
+  }
+
+  // clicking a matched part replays its animation
+  ids.forEach((id) => {
+    $('#p-' + id).addEventListener('click', (e) => {
+      if (!matched[id]) return;
+      e.stopPropagation();
+      play($('#p-' + id), CHAPTER.parts[id].anim);
+    });
+  });
+
+  $('#langBtn').onclick = () => { lang = lang === 'en' ? 'ur' : 'en'; renderText(); };
+  $('#resetBtn').onclick = reset;
+
+  function reset() {
+    ids.forEach((id) => { matched[id] = false; $('#t-' + id).classList.remove('on'); $('#p-' + id).classList.remove('matched'); });
+    zones.forEach((z) => z.classList.remove('filled'));
+    halfShown = false;
+    buildChips();
+    renderText();
+  }
+
+  reset();
+</script>
+</body>
+</html>
