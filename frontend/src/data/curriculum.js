@@ -12,8 +12,8 @@ export const CLASSES = [
 export const CHAPTERS = {
   3: [
     { id: 1, title: 'The Human Body', subject: 'Science', emoji: '🦴', color: '#3b82f6', open: true, game: 'skeleton' },
-    { id: 2, title: 'Plants Around Us', subject: 'Science', emoji: '🌿', color: '#10b981', open: false },
-    { id: 3, title: 'Animals and Habitats', subject: 'Science', emoji: '🦁', color: '#f59e0b', open: false },
+    { id: 2, title: 'Plants and Animals', subject: 'Science', emoji: '🌳', color: '#10b981', open: true, game: 'sorting' },
+    { id: 3, title: 'Habitats and Homes', subject: 'Science', emoji: '🦁', color: '#f59e0b', open: false },
     { id: 4, title: 'Water and Weather', subject: 'Science', emoji: '🌦️', color: '#06b6d4', open: false },
     { id: 5, title: 'Light and Shadows', subject: 'Science', emoji: '💡', color: '#ec4899', open: false },
   ],

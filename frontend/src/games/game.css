@@ -107,3 +107,17 @@
   .stage-pills { order: 3; width: 100%; margin: 0; }
   .head-tools { margin-left: auto; }
 }
+
+/* ---------- sorting level (plants and animals) ---------- */
+.scene-wrap.meadow { background: #bfe6ff; }
+.bin { fill: color-mix(in srgb, var(--c) 18%, #fff); stroke: var(--c); stroke-width: 6; stroke-dasharray: 14 8; transition: fill .15s; }
+.bin.hot { fill: color-mix(in srgb, var(--c) 40%, #fff); stroke-dasharray: none; }
+.bin-label { fill: #fff; font-size: 24px; font-weight: 800; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; pointer-events: none; }
+.item-name { font-size: 18px; font-weight: 800; fill: #3b2f4a; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; pointer-events: none; }
+.settle { animation: popIn2 .5s ease-out; }
+.settle .item-name { font-size: 15px; }
+.settle.cheer.animal { animation: hop .7s ease-in-out 3; }
+.settle.cheer.plant { animation: sway2 .8s ease-in-out 3; }
+@keyframes popIn2 { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-34px); } 70% { transform: translateY(0) scaleY(.92); } }
+@keyframes sway2 { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(9deg); } 75% { transform: rotate(-9deg); } }

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { sfx } from '../../sfx.js';
+import { sfx } from '../sfx.js';
 
 // Drag handle for an SVG group. `home` is where it rests (offset from its drawn
 // position). On release the parent's `onDrop({ offset, pointer })` answers

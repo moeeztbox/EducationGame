@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Draggable from './Draggable.jsx';
+import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
 import { PARTS, PartArt, PartSkin, PartGroup } from './parts.jsx';
 import { HOMES, TOL, SCENE_W, SCENE_H, pickPraise } from './layout.js';
