@@ -14,9 +14,10 @@ export const CHAPTERS = {
     { id: 1, title: 'The Human Body', subject: 'Science', emoji: '🦴', color: '#3b82f6', open: true, game: 'skeleton' },
     { id: 2, title: 'Plants and Animals', subject: 'Science', emoji: '🌳', color: '#10b981', open: true, game: 'sorting' },
     { id: 3, title: 'Living and Non-living Things', subject: 'Science', emoji: '🐄', color: '#f59e0b', open: true, game: 'living' },
-    { id: 4, title: 'Water and Weather', subject: 'Science', emoji: '🌦️', color: '#06b6d4', open: false },
-    { id: 5, title: 'Light and Shadows', subject: 'Science', emoji: '💡', color: '#ec4899', open: false },
-    { id: 6, title: 'Habitats and Homes', subject: 'Science', emoji: '🦁', color: '#8b5cf6', open: false },
+    { id: 4, title: 'Plants Around You', subject: 'Science', emoji: '🌳', color: '#16a34a', open: true, game: 'plants' },
+    { id: 5, title: 'Water and Weather', subject: 'Science', emoji: '🌦️', color: '#06b6d4', open: false },
+    { id: 6, title: 'Light and Shadows', subject: 'Science', emoji: '💡', color: '#ec4899', open: false },
+    { id: 7, title: 'Habitats and Homes', subject: 'Science', emoji: '🦁', color: '#8b5cf6', open: false },
   ],
 };
 

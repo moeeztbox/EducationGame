@@ -137,3 +137,9 @@
 @keyframes idleHop { 0%, 55%, 100% { transform: translateY(0); } 70% { transform: translateY(-20px); } 85% { transform: translateY(0); } }
 @keyframes idleBob { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-6px) rotate(1.2deg); } }
 .settle { transform-box: fill-box; transform-origin: 50% 50%; }
+
+/* ---------- plants photo-matching level ---------- */
+.scene-wrap.plants { background: linear-gradient(#eaf7d9, #cfe8a6); }
+.item-name.sm { font-size: 14px; }
+
+.item-name.sm { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
