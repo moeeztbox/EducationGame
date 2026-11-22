@@ -3,7 +3,7 @@ import { findClass } from '../data/curriculum.js';
 import { isMuted, setMuted } from '../sfx.js';
 
 // Top bar shared by every game: back, where we are, stage tags, sound, restart, progress.
-export default function GameHeader({ chapter, classId, stages, stage, progress, onExit, onRestart }) {
+export default function GameHeader({ chapter, classId, stages, stage, round, progress, onExit, onRestart }) {
   const [muted, setMutedState] = useState(isMuted());
   const cls = findClass(classId);
   const toggleSound = () => {
@@ -20,7 +20,8 @@ export default function GameHeader({ chapter, classId, stages, stage, progress, 
           <span>{chapter?.title}</span>
         </div>
         <div className="stage-pills">
-          {stages.map((s, i) => (
+          {round && <span className="pill on">Round {round.index} of {round.total} · {round.title}</span>}
+          {!round && stages.map((s, i) => (
             <span key={s} className={`pill ${stage === i + 1 ? 'on' : ''} ${stage > i + 1 ? 'done' : ''}`}>
               {i + 1}. {s}
             </span>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
+import { doneActions } from '../../components/roundActions.js';
 import { ITEMS } from './farmItems.jsx';
 import { Scenery } from './farmArt.jsx';
 import { sfx } from '../../sfx.js';
@@ -30,7 +31,7 @@ const BOOST = { ducks: 1.25 }; // spread-out pictures read small otherwise
 const fitScale = (id) => Math.min(1, ((BOOST[id] || 1) * 124) / Math.max(spriteOf(id).w, spriteOf(id).h));
 
 // Chapter "Living and Non-living Things": sort the farm picture into two baskets.
-export default function LivingGame({ chapter, classId, onExit }) {
+export default function LivingGame({ chapter, classId, round, onExit }) {
   const [run, setRun] = useState(0);
   const [progress, setProgress] = useState(0);
   const onProgress = useCallback((p) => setProgress(p), []);
@@ -39,6 +40,7 @@ export default function LivingGame({ chapter, classId, onExit }) {
     <div className="screen game">
       <GameHeader
         chapter={chapter}
+        round={round}
         classId={classId}
         stages={['Sort the farm']}
         stage={1}
@@ -46,12 +48,12 @@ export default function LivingGame({ chapter, classId, onExit }) {
         onExit={onExit}
         onRestart={() => setRun((r) => r + 1)}
       />
-      <FarmLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} onExit={onExit} />
+      <FarmLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} round={round} onExit={onExit} />
     </div>
   );
 }
 
-function FarmLevel({ onProgress, onReplay, onExit }) {
+function FarmLevel({ onProgress, onReplay, round, onExit }) {
   const total = ITEMS.length;
   const [placed, setPlaced] = useState({}); // id -> slot position
   const [settled, setSettled] = useState({});
@@ -185,10 +187,7 @@ function FarmLevel({ onProgress, onReplay, onExit }) {
         <Celebration
           title="Well done!"
           text="You can tell living things from non-living things."
-          actions={[
-            { label: 'Play again', primary: true, onClick: onReplay },
-            { label: 'Back to chapters', onClick: onExit },
-          ]}
+          actions={doneActions(round, onReplay, onExit)}
         />
       )}
     </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
+import { doneActions } from '../../components/roundActions.js';
 import { CONFIGS } from './configs.js';
 import { sfx } from '../../sfx.js';
 import '../game.css';
@@ -30,7 +31,7 @@ const shuffle = (arr) => {
 
 // Photo-sorting game: drag each photo into the box it belongs to.
 // What is sorted (photos, boxes, texts) comes from a config in configs.js.
-export default function PhotoSortGame({ chapter, classId, config: configKey, onExit }) {
+export default function PhotoSortGame({ chapter, classId, config: configKey, round, onExit }) {
   const config = CONFIGS[configKey];
   const [run, setRun] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -40,6 +41,7 @@ export default function PhotoSortGame({ chapter, classId, config: configKey, onE
     <div className="screen game">
       <GameHeader
         chapter={chapter}
+        round={round}
         classId={classId}
         stages={[config.stage]}
         stage={1}
@@ -47,7 +49,7 @@ export default function PhotoSortGame({ chapter, classId, config: configKey, onE
         onExit={onExit}
         onRestart={() => setRun((r) => r + 1)}
       />
-      <PhotoLevel key={run} config={config} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} onExit={onExit} />
+      <PhotoLevel key={run} config={config} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} round={round} onExit={onExit} />
       {config.credits && <p className="credits">{config.credits}</p>}
     </div>
   );
@@ -62,7 +64,7 @@ function Photo({ src }) {
   );
 }
 
-function PhotoLevel({ config, onProgress, onReplay, onExit }) {
+function PhotoLevel({ config, onProgress, onReplay, round, onExit }) {
   const { bins, photos } = config;
   const kinds = Object.keys(bins);
   const total = photos.length;
@@ -184,10 +186,7 @@ function PhotoLevel({ config, onProgress, onReplay, onExit }) {
         <Celebration
           title="Well done!"
           text={config.doneText}
-          actions={[
-            { label: 'Play again', primary: true, onClick: onReplay },
-            { label: 'Back to chapters', onClick: onExit },
-          ]}
+          actions={doneActions(round, onReplay, onExit)}
         />
       )}
     </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
+import { doneActions } from '../../components/roundActions.js';
 import { ITEMS } from './items.jsx';
 import { sfx } from '../../sfx.js';
 import '../game.css';
@@ -21,7 +22,7 @@ const PRAISE = ['Great!', 'Well done!', 'Super!', 'Awesome!', 'Perfect!', 'Nice 
 const slot = (kind, n) => ({ x: BINS[kind].x + 58 + n * 91, y: BIN_Y + 98 });
 
 // Chapter "Plants and Animals": sort every picture into the right basket.
-export default function SortingGame({ chapter, classId, onExit }) {
+export default function SortingGame({ chapter, classId, round, onExit }) {
   const [run, setRun] = useState(0);
   const [progress, setProgress] = useState(0);
   const onProgress = useCallback((p) => setProgress(p), []);
@@ -30,6 +31,7 @@ export default function SortingGame({ chapter, classId, onExit }) {
     <div className="screen game">
       <GameHeader
         chapter={chapter}
+        round={round}
         classId={classId}
         stages={['Sort them out']}
         stage={1}
@@ -37,12 +39,12 @@ export default function SortingGame({ chapter, classId, onExit }) {
         onExit={onExit}
         onRestart={() => setRun((r) => r + 1)}
       />
-      <SortLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} onExit={onExit} />
+      <SortLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} round={round} onExit={onExit} />
     </div>
   );
 }
 
-function SortLevel({ onProgress, onReplay, onExit }) {
+function SortLevel({ onProgress, onReplay, round, onExit }) {
   const total = ITEMS.length;
   const [placed, setPlaced] = useState({}); // id -> slot position
   const [settled, setSettled] = useState({});
@@ -171,10 +173,7 @@ function SortLevel({ onProgress, onReplay, onExit }) {
         <Celebration
           title="Well done!"
           text="You sorted all the animals and plants correctly."
-          actions={[
-            { label: 'Play again', primary: true, onClick: onReplay },
-            { label: 'Back to chapters', onClick: onExit },
-          ]}
+          actions={doneActions(round, onReplay, onExit)}
         />
       )}
     </div>

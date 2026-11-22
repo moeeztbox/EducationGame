@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
+import { doneActions } from '../../components/roundActions.js';
 import { sfx } from '../../sfx.js';
 import wood from '../../assets/materials/wood.webp';
 import cotton from '../../assets/materials/cotton.webp';
@@ -48,7 +49,7 @@ const shuffle = (arr) => {
 };
 
 // Chapter "Wood and Cotton": build things from the material they are made of.
-export default function MaterialsGame({ chapter, classId, onExit }) {
+export default function MaterialsGame({ chapter, classId, round, onExit }) {
   const [run, setRun] = useState(0);
   const [progress, setProgress] = useState(0);
   const onProgress = useCallback((p) => setProgress(p), []);
@@ -57,6 +58,7 @@ export default function MaterialsGame({ chapter, classId, onExit }) {
     <div className="screen game">
       <GameHeader
         chapter={chapter}
+        round={round}
         classId={classId}
         stages={['Make things']}
         stage={1}
@@ -64,13 +66,13 @@ export default function MaterialsGame({ chapter, classId, onExit }) {
         onExit={onExit}
         onRestart={() => setRun((r) => r + 1)}
       />
-      <MaterialsLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} onExit={onExit} />
+      <MaterialsLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} round={round} onExit={onExit} />
       <p className="credits">{CREDITS}</p>
     </div>
   );
 }
 
-function MaterialsLevel({ onProgress, onReplay, onExit }) {
+function MaterialsLevel({ onProgress, onReplay, round, onExit }) {
   const total = THINGS.length;
   const [order] = useState(() => shuffle(THINGS)); // thing shown in SLOTS[i]
   const [built, setBuilt] = useState({});
@@ -186,10 +188,7 @@ function MaterialsLevel({ onProgress, onReplay, onExit }) {
         <Celebration
           title="Well done!"
           text="Wood makes houses, chairs and beds. Cotton makes pillows and towels."
-          actions={[
-            { label: 'Play again', primary: true, onClick: onReplay },
-            { label: 'Back to chapters', onClick: onExit },
-          ]}
+          actions={doneActions(round, onReplay, onExit)}
         />
       )}
     </div>
