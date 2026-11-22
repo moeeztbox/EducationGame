@@ -4,12 +4,12 @@ import { sfx } from '../sfx.js';
 // Drag handle for an SVG group. `home` is where it rests (offset from its drawn
 // position). On release the parent's `onDrop({ offset, pointer })` answers
 // `{ ok: true, to }` to snap it there, or anything else to send it back home.
-export default function Draggable({ id, home, homeRot = 0, center, box, hit, onMove, onDrop, onSettle, children }) {
+export default function Draggable({ id, home, homeRot = 0, homeScale = 1, center, box, hit, onMove, onDrop, onSettle, children }) {
   const ref = useRef(null);
   const session = useRef(null);
   const [off, setOff] = useState(home);
   const [rot, setRot] = useState(homeRot);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(homeScale);
   const [mode, setMode] = useState('home'); // home | drag | back | placed
 
   const toScene = (e) => {
@@ -57,7 +57,7 @@ export default function Draggable({ id, home, homeRot = 0, center, box, hit, onM
     } else {
       setOff(home);
       setRot(homeRot);
-      setScale(1);
+      setScale(homeScale);
       setMode('back');
       onMove?.(id, null);
       setTimeout(() => setMode('home'), 450);

@@ -145,3 +145,11 @@
 .item-name.sm { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
 
 .credits { margin: 2px 8px 0; font-size: 11px; color: #5b6b8c; text-align: center; line-height: 1.3; }
+
+/* ---------- animal homes level ---------- */
+.photo-frame { fill: #fff; stroke: #3b2f4a; stroke-width: 3; transition: fill .15s, stroke .15s; }
+.photo-frame.hot { fill: #fde68a; stroke: #f59e0b; stroke-width: 6; }
+.ghost-img { filter: brightness(0) invert(1); opacity: .4; }
+.settle-img { animation: popIn2 .5s ease-out; transform-box: fill-box; transform-origin: 50% 50%; }
+.caption-tab { fill: #6b2f7d; }
+.caption-text { fill: #fff; font-size: 22px; font-weight: 700; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; pointer-events: none; }
