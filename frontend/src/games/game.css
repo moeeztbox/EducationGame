@@ -143,3 +143,5 @@
 .item-name.sm { font-size: 14px; }
 
 .item-name.sm { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+
+.credits { margin: 2px 8px 0; font-size: 11px; color: #5b6b8c; text-align: center; line-height: 1.3; }

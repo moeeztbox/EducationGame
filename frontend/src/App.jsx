@@ -5,11 +5,11 @@ import ChapterSelect from './screens/ChapterSelect.jsx';
 import SkeletonGame from './games/skeleton/SkeletonGame.jsx';
 import SortingGame from './games/sorting/SortingGame.jsx';
 import LivingGame from './games/living/LivingGame.jsx';
-import PlantsGame from './games/plants/PlantsGame.jsx';
+import PhotoSortGame from './games/photosort/PhotoSortGame.jsx';
 import { findChapter } from './data/curriculum.js';
 
 // Which game component plays each chapter (see `game` in data/curriculum.js).
-const GAMES = { skeleton: SkeletonGame, sorting: SortingGame, living: LivingGame, plants: PlantsGame };
+const GAMES = { skeleton: SkeletonGame, sorting: SortingGame, living: LivingGame, photosort: PhotoSortGame };
 
 // Very small screen switcher: welcome -> class -> chapter -> game.
 export default function App() {
@@ -33,6 +33,7 @@ export default function App() {
       return (
         <Game
           chapter={chapter}
+          config={chapter?.config}
           classId={route.classId}
           onExit={() => go('chapter', { classId: route.classId })}
         />
