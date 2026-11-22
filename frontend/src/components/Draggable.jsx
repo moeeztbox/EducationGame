@@ -58,7 +58,7 @@ export default function Draggable({ id, home, homeRot = 0, homeScale = 1, center
       setOff(home);
       setRot(homeRot);
       setScale(homeScale);
-      setMode('back');
+      setMode(res && res.calm ? 'calm' : 'back');
       onMove?.(id, null);
       setTimeout(() => setMode('home'), 450);
     }

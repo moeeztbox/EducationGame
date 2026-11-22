@@ -7,10 +7,11 @@ import SortingGame from './games/sorting/SortingGame.jsx';
 import LivingGame from './games/living/LivingGame.jsx';
 import PhotoSortGame from './games/photosort/PhotoSortGame.jsx';
 import HomesGame from './games/homes/HomesGame.jsx';
+import MaterialsGame from './games/materials/MaterialsGame.jsx';
 import { findChapter } from './data/curriculum.js';
 
 // Which game component plays each chapter (see `game` in data/curriculum.js).
-const GAMES = { skeleton: SkeletonGame, sorting: SortingGame, living: LivingGame, photosort: PhotoSortGame, homes: HomesGame };
+const GAMES = { skeleton: SkeletonGame, sorting: SortingGame, living: LivingGame, photosort: PhotoSortGame, homes: HomesGame, materials: MaterialsGame };
 
 // Very small screen switcher: welcome -> class -> chapter -> game.
 export default function App() {

@@ -153,3 +153,12 @@
 .settle-img { animation: popIn2 .5s ease-out; transform-box: fill-box; transform-origin: 50% 50%; }
 .caption-tab { fill: #6b2f7d; }
 .caption-text { fill: #fff; font-size: 22px; font-weight: 700; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; pointer-events: none; }
+
+/* ---------- wood and cotton level ---------- */
+.mat-img { filter: grayscale(1) brightness(.92); opacity: .78; transition: filter 1s ease, opacity 1s ease; }
+.mat-img.built { filter: none; opacity: 1; }
+.mat-frame { fill: #fff; stroke: #3b2f4a; stroke-width: 3; transition: fill .15s, stroke .15s; }
+.mat-frame.hot { fill: #fde68a; stroke: #f59e0b; stroke-width: 6; }
+.mat-frame.wobble { animation: shake .4s; }
+.drg.calm .drg-in { animation: none; }
+.drg.calm { transition: none; }

@@ -45,3 +45,14 @@ The animals were cut out of their photos and placed on the habitat photos.
 | Tree | MichaelMaggs | CC BY-SA 2.5 | File:Acer cappadocicum spring.jpg |
 | Marigold | Dmitri Popov | CC BY-SA 3.0 | File:Marigold.jpg |
 | Maple leaves | Superior National Forest | CC BY 2.0 | File:Acer saccharum 1-jgreenlee (5098070608).jpg |
+
+## Wood and Cotton (chapter 8)
+| Photo | Author | Licence | Commons file |
+|---|---|---|---|
+| Wood (pine) | Beentree | CC BY-SA 4.0 | File:Pinus sylvestris wood ray section 1 beentree.jpg |
+| Cotton plant | (public domain) | Public domain | File:CottonPlant.JPG |
+| Chair | Thomas Chippendale (The Met) | CC0 | File:Set of fourteen side chairs MET DP110780.jpg |
+| Bed | R-E-AL | CC BY-SA 3.0 | File:2008-04-12 Freilichtmuseum Detmold (11).jpg |
+| Log house | Kjetil Bjornsrud | CC BY-SA 3.0 | File:Norskfolkemuseum 1.jpg |
+| Pillows | Amin | CC BY-SA 4.0 | File:Pillows on a hotel bed.jpg |
+| Towels | User:Mattes | Public domain | File:Zusammengelegte Handtucher.jpg |

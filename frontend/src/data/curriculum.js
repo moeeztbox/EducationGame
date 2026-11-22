@@ -18,9 +18,10 @@ export const CHAPTERS = {
     { id: 5, title: 'Types of Flowering Plants', subject: 'Science', emoji: '🌹', color: '#be185d', open: true, game: 'photosort', config: 'flowertypes' },
     { id: 6, title: 'Fruits, Vegetables and Grains', subject: 'Science', emoji: '🥕', color: '#ea580c', open: true, game: 'photosort', config: 'foods' },
     { id: 7, title: 'Plants Give Us Shelter', subject: 'Science', emoji: '🐿️', color: '#b45309', open: true, game: 'homes' },
-    { id: 8, title: 'Water and Weather', subject: 'Science', emoji: '🌦️', color: '#06b6d4', open: false },
-    { id: 9, title: 'Light and Shadows', subject: 'Science', emoji: '💡', color: '#0ea5e9', open: false },
-    { id: 10, title: 'Habitats and Homes', subject: 'Science', emoji: '🦁', color: '#8b5cf6', open: false },
+    { id: 8, title: 'Wood and Cotton', subject: 'Science', emoji: '🪑', color: '#92400e', open: true, game: 'materials' },
+    { id: 9, title: 'Water and Weather', subject: 'Science', emoji: '🌦️', color: '#06b6d4', open: false },
+    { id: 10, title: 'Light and Shadows', subject: 'Science', emoji: '💡', color: '#0ea5e9', open: false },
+    { id: 11, title: 'Habitats and Homes', subject: 'Science', emoji: '🦁', color: '#8b5cf6', open: false },
   ],
 };
 
