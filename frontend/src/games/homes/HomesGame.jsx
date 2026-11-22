@@ -3,64 +3,66 @@ import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
 import { sfx } from '../../sfx.js';
-import crowHome from '../../assets/homes/crow_home.webp';
-import crowImg from '../../assets/homes/crow.webp';
-import squirrelHome from '../../assets/homes/squirrel_home.webp';
-import squirrelImg from '../../assets/homes/squirrel.webp';
-import ladybirdHome from '../../assets/homes/ladybird_home.webp';
-import ladybirdImg from '../../assets/homes/ladybird.webp';
-import hopperHome from '../../assets/homes/hopper_home.webp';
-import hopperImg from '../../assets/homes/hopper.webp';
+import nest from '../../assets/homes/nest.webp';
+import tree from '../../assets/homes/tree.webp';
+import flower from '../../assets/homes/flower.webp';
+import leaf from '../../assets/homes/leaf.webp';
+import crow from '../../assets/homes/crow.webp';
+import squirrel from '../../assets/homes/squirrel.webp';
+import ladybird from '../../assets/homes/ladybird.webp';
+import hopper from '../../assets/homes/hopper.webp';
 import '../game.css';
 
 const W = 1100;
 const H = 860;
 const PHOTO_W = 460;
+const PHOTO_H = 307; // every habitat photo is 900 x 600
 const TRAY_Y = 745;
 const TRAY_X = [160, 420, 680, 940];
 const TRAY_SIZE = 150;
 
-// w/h: the book photo's size; sprite: where the animal sits inside it (same pixels).
-// Each photo is placed on the board at (x, y) at PHOTO_W wide.
+// Each animal is a cut-out photo. `place` says where it sits on its habitat photo
+// (bottom-centre x/y and width, in the habitat's 900 x 600 pixels); `aspect` is height / width.
 const ANIMALS = [
   {
-    id: 'crow', name: 'Crow', home: crowHome, img: crowImg, x: 60, y: 20, w: 1008, h: 558,
-    sprite: { x: 544, y: 227, w: 147, h: 159 },
+    id: 'crow', name: 'Crow', home: nest, img: crow, x: 60, y: 20,
+    place: { bx: 441, by: 375, w: 234 }, aspect: 0.7233,
     caption: 'Birds build nests in trees.',
     wrong: 'A crow lives in a nest. Birds build nests in trees.',
   },
   {
-    id: 'squirrel', name: 'Squirrel', home: squirrelHome, img: squirrelImg, x: 580, y: 20, w: 1056, h: 522,
-    sprite: { x: 16, y: 56, w: 849, h: 457 },
+    id: 'squirrel', name: 'Squirrel', home: tree, img: squirrel, x: 580, y: 20,
+    place: { bx: 506, by: 309, w: 225 }, aspect: 0.9333,
     caption: 'Squirrels live in trees and bushes.',
     wrong: 'Squirrels live in trees and bushes.',
   },
   {
-    id: 'ladybird', name: 'Ladybird', home: ladybirdHome, img: ladybirdImg, x: 60, y: 307, w: 822, h: 528,
-    sprite: { x: 261, y: 44, w: 390, h: 265 },
+    id: 'ladybird', name: 'Ladybird', home: flower, img: ladybird, x: 60, y: 357,
+    place: { bx: 450, by: 189, w: 167 }, aspect: 0.7567,
     caption: 'Insects live in plants and flowers.',
     wrong: 'A ladybird is an insect. Insects live in plants and flowers - find the flower.',
   },
   {
-    id: 'hopper', name: 'Grasshopper', home: hopperHome, img: hopperImg, x: 580, y: 307, w: 1236, h: 684,
-    sprite: { x: 220, y: 36, w: 570, h: 352 },
+    id: 'hopper', name: 'Grasshopper', home: leaf, img: hopper, x: 580, y: 357,
+    place: { bx: 436, by: 394, w: 267 }, aspect: 0.6,
     caption: 'Insects live in plants and flowers.',
     wrong: 'A grasshopper is an insect. Insects live in plants and flowers - find the leaf.',
   },
 ];
 const HINT = 'Where does each animal live? Drag every animal to its home.';
 const PRAISE = ['Great!', 'Well done!', 'Super!', 'Perfect!'];
+const CREDITS =
+  'Photos from Wikimedia Commons: crow - Alexis Lours (CC BY 4.0); squirrel - Peter Trimming (CC BY 2.0); ladybird - Francisco Welter-Schultes (CC0); ' +
+  'katydid - Vishalsh521 (CC BY 3.0); nest - Knowledge and philosophy (CC BY-SA 4.0); tree - MichaelMaggs (CC BY-SA 2.5); marigold - Dmitri Popov (CC BY-SA 3.0); maple leaves - Superior National Forest (CC BY 2.0).';
 
 // Geometry of each animal on the board (scene units).
 const geo = (a) => {
-  const k = PHOTO_W / a.w;
-  const ph = Math.round(a.h * k);
-  const sw = a.sprite.w * k;
-  const sh = a.sprite.h * k;
-  const sx = a.x + a.sprite.x * k;
-  const sy = a.y + a.sprite.y * k;
-  const trayScale = TRAY_SIZE / Math.max(sw, sh);
-  return { k, ph, sw, sh, sx, sy, cx: sx + sw / 2, cy: sy + sh / 2, trayScale };
+  const k = PHOTO_W / 900;
+  const sw = a.place.w * k;
+  const sh = sw * a.aspect;
+  const sx = a.x + a.place.bx * k - sw / 2;
+  const sy = a.y + a.place.by * k - sh;
+  return { sw, sh, sx, sy, cx: sx + sw / 2, cy: sy + sh / 2, trayScale: TRAY_SIZE / Math.max(sw, sh) };
 };
 
 const shuffle = (arr) => {
@@ -72,7 +74,7 @@ const shuffle = (arr) => {
   return a;
 };
 
-// Chapter "Plants Give Us Shelter": put each animal back at its home in the book photo.
+// Chapter "Plants Give Us Shelter": put each animal back at its home.
 export default function HomesGame({ chapter, classId, onExit }) {
   const [run, setRun] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -90,6 +92,7 @@ export default function HomesGame({ chapter, classId, onExit }) {
         onRestart={() => setRun((r) => r + 1)}
       />
       <HomesLevel key={run} onProgress={onProgress} onReplay={() => setRun((r) => r + 1)} onExit={onExit} />
+      <p className="credits">{CREDITS}</p>
     </div>
   );
 }
@@ -116,7 +119,7 @@ function HomesLevel({ onProgress, onReplay, onExit }) {
 
   // Which photo is under the pointer.
   const photoAt = (p) =>
-    ANIMALS.find((a) => p.x > a.x && p.x < a.x + PHOTO_W && p.y > a.y && p.y < a.y + geo(a).ph) || null;
+    ANIMALS.find((a) => p.x > a.x && p.x < a.x + PHOTO_W && p.y > a.y && p.y < a.y + PHOTO_H) || null;
 
   const onMove = (id, off, p) => setHot(off ? photoAt(p)?.id ?? null : null);
 
@@ -156,16 +159,16 @@ function HomesLevel({ onProgress, onReplay, onExit }) {
             const g = geo(a);
             return (
               <g key={a.id}>
-                <rect x={a.x - 6} y={a.y - 6} width={PHOTO_W + 12} height={g.ph + 12} rx="22" className={`photo-frame${hot === a.id ? ' hot' : ''}`} />
-                <image href={a.home} x={a.x} y={a.y} width={PHOTO_W} height={g.ph} clipPath="url(#homeClip)" pointerEvents="none" />
+                <rect x={a.x - 6} y={a.y - 6} width={PHOTO_W + 12} height={PHOTO_H + 12} rx="22" className={`photo-frame${hot === a.id ? ' hot' : ''}`} />
+                <image href={a.home} x={a.x} y={a.y} width={PHOTO_W} height={PHOTO_H} clipPath="url(#homeClip)" pointerEvents="none" />
                 {!placed[a.id] && (
                   <image href={a.img} x={g.sx} y={g.sy} width={g.sw} height={g.sh} className="ghost-img" pointerEvents="none" />
                 )}
                 {settled[a.id] && (
                   <g>
                     <image href={a.img} x={g.sx} y={g.sy} width={g.sw} height={g.sh} className="settle-img" pointerEvents="none" />
-                    <rect x={a.x} y={a.y + g.ph - 40} width={Math.min(PHOTO_W - 20, 40 + a.caption.length * 11.5)} height="40" rx="0" className="caption-tab" />
-                    <text x={a.x + 16} y={a.y + g.ph - 14} className="caption-text">{a.caption}</text>
+                    <rect x={a.x} y={a.y + PHOTO_H - 40} width={Math.min(PHOTO_W - 20, 40 + a.caption.length * 11.5)} height="40" rx="0" className="caption-tab" />
+                    <text x={a.x + 16} y={a.y + PHOTO_H - 14} className="caption-text">{a.caption}</text>
                   </g>
                 )}
               </g>

@@ -1,4 +1,4 @@
-﻿import maple from '../../assets/plants/maple.webp';
+import maple from '../../assets/plants/maple.webp';
 import oak from '../../assets/plants/oak.webp';
 import grass1 from '../../assets/plants/grass1.webp';
 import grass2 from '../../assets/plants/grass2.webp';
@@ -24,6 +24,7 @@ export const CONFIGS = {
     stage: 'Match the plants',
     hint: 'Look at each photo. Is it a tree, grass or a flowering plant? Drag it into the right box.',
     doneText: 'You can tell trees, grass and flowering plants apart.',
+    credits: 'Photos from Wikimedia Commons: maple - Bruce Marlin (CC BY-SA 2.5); oak - Hopefully Acceptable Username (CC BY-SA 4.0); grass - Bidgee and Rasbak (CC BY-SA 3.0); marigolds - Sabina Bajracharya (CC BY-SA 4.0); cosmos - Joydeep (CC BY-SA 3.0).',
     bins: {
       tree: { label: '🌳 Trees', color: '#8b5a2b', a: 'a tree', fact: 'A tree is a tall plant with tall stems and thick branches. Trees live for a long time.' },
       grass: { label: '🌿 Grass', color: '#16a34a', a: 'grass', fact: 'Grass is a green plant with thin, soft leaves. They grow close together in a large number.' },
@@ -42,6 +43,7 @@ export const CONFIGS = {
     stage: 'Bushes, herbs and vines',
     hint: 'These are all flowering plants. Is each one a bush, an herb or a vine? Drag it into the right box.',
     doneText: 'You can tell bushes, herbs and vines apart.',
+    credits: 'Photos from Wikimedia Commons: roses - Spring\'s Flowers (CC0); oleander - Alvesgaspar (CC BY 2.5); rosemary - Margalob (CC BY-SA 4.0); parsley - PilotChicago (CC BY-SA 4.0); grapes (Cabernet Sauvignon, Gaillac) and pumpkin (Cucurbita pepo) - CC BY-SA 3.0.',
     bins: {
       bush: { label: '🌹 Bushes', color: '#be185d', a: 'a bush', fact: 'Bushes are smaller than trees and have many stems.' },
       herb: { label: '🌿 Herbs', color: '#16a34a', a: 'an herb', fact: 'Herbs are small plants with small green stems.' },
