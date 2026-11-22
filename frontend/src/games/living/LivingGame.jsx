@@ -2,14 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GameHeader from '../../components/GameHeader.jsx';
 import Draggable from '../../components/Draggable.jsx';
 import Celebration from '../../components/Celebration.jsx';
-import { BACKGROUND, ITEMS } from './farmItems.js';
-import farm from '../farm.json';
+import { ITEMS } from './farmItems.jsx';
+import { Scenery } from './farmArt.jsx';
 import { sfx } from '../../sfx.js';
 import '../game.css';
 
-// Scene is in the farm picture's own pixels (1550 x 835) with the two baskets underneath.
-const W = farm.width;
-const IMG_H = farm.height;
+// The farm scene is 1550 x 835 with the two baskets underneath.
+const W = 1550;
 const H = 1110;
 const BIN_Y = 880;
 const BIN_W = 730;
@@ -20,7 +19,7 @@ const BINS = {
 };
 const HINT = 'Can it grow? Can it move on its own? Does it need food or water? Sort the things from the farm.';
 
-const spriteOf = (id) => farm.sprites[id];
+const spriteOf = (id) => ITEMS.find((i) => i.id === id);
 const centreOf = (id) => {
   const s = spriteOf(id);
   return [s.x + s.w / 2, s.y + s.h / 2];
@@ -111,7 +110,7 @@ function FarmLevel({ onProgress, onReplay, onExit }) {
     const s = spriteOf(item.id);
     return (
       <g className={item.kind === 'living' ? `idle idle-${item.id}` : undefined}>
-        <image href={item.src} x={s.x} y={s.y} width={s.w} height={s.h} pointerEvents="none" />
+        <g transform={`translate(${s.x} ${s.y})`} pointerEvents="none"><item.Art /></g>
       </g>
     );
   };
@@ -128,7 +127,7 @@ function FarmLevel({ onProgress, onReplay, onExit }) {
             </linearGradient>
           </defs>
           <rect width={W} height={H} fill="url(#lower)" />
-          <image href={BACKGROUND} x="0" y="0" width={W} height={IMG_H} preserveAspectRatio="none" />
+          <Scenery />
 
           {Object.entries(BINS).map(([kind, b]) => (
             <g key={kind}>
@@ -171,7 +170,7 @@ function FarmLevel({ onProgress, onReplay, onExit }) {
                 box={[s.x, s.y, s.w, s.h]}
                 center={centreOf(i.id)}
                 home={{ x: 0, y: 0 }}
-                hit={<path d={farm.hit[i.id]} fill="transparent" />}
+                hit={<path d={i.hit} fill="transparent" />}
                 onMove={onMove}
                 onDrop={onDrop}
                 onSettle={(id) => setSettled((st) => ({ ...st, [id]: true }))}
