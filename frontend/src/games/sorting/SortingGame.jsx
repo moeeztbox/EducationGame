@@ -143,7 +143,7 @@ function SortLevel({ onProgress, onReplay, round, onExit }) {
               <g
                 key={i.id}
                 className={`settle ${i.kind}${cheer ? ' cheer' : ''}`}
-                style={{ transformOrigin: `${s.x}px ${s.y}px`, animationDelay: cheer ? `${n * 0.08}s` : '0s' }}
+                style={{ animationDelay: cheer ? `${n * 0.08}s` : '0s' }}
               >
                 <g transform={`translate(${s.x} ${s.y})`}><i.Art /></g>
                 <text x={s.x} y={s.y + 58} textAnchor="middle" className="item-name">{i.name}</text>

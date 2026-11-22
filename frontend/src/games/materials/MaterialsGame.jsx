@@ -144,7 +144,7 @@ function MaterialsLevel({ onProgress, onReplay, round, onExit }) {
             const [x, y] = SLOTS[i];
             const m = MATERIALS[t.made];
             return (
-              <g key={t.id} className={built[t.id] ? 'settle' : undefined}>
+              <g key={t.id} className={built[t.id] ? 'build-pop' : undefined}>
                 <rect
                   x={x - 8} y={y - 8} width={CARD_W + 16} height={CARD_H + 16} rx="18"
                   className={`mat-frame${hot === t.id ? ' hot' : ''}${wobble === t.id ? ' wobble' : ''}`}
